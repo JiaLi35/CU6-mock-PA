@@ -36,7 +36,7 @@ const courseSchema = new Schema({
   },
 });
 
-// tv show modal
+// course model
 const Course = model("Course", courseSchema);
 
 module.exports = Course;

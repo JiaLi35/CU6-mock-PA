@@ -1,6 +1,13 @@
 const express = require("express");
 const router = express.Router();
 const Course = require("../models/course");
+const {
+  getCourses,
+  getCourse,
+  addCourse,
+  updateCourse,
+  deleteCourse,
+} = require("../controllers/courses");
 
 // instruction: import the course model
 
@@ -10,9 +17,7 @@ const Course = require("../models/course");
 */
 router.get("/", async (req, res) => {
   try {
-    const courses = await Course.find()
-      .sort({ _id: -1 })
-      .populate("instructor");
+    const courses = await getCourses();
     res.status(200).send(courses);
   } catch (error) {
     console.log(error);
@@ -24,7 +29,7 @@ router.get("/", async (req, res) => {
 router.get("/:id", async (req, res) => {
   try {
     const id = req.params.id;
-    const course = await Course.findById(id).populate("instructor");
+    const course = await getCourse(id);
     res.status(200).send(course);
   } catch (error) {
     console.log(error);
@@ -44,16 +49,15 @@ router.post("/", async (req, res) => {
       description,
       enrollmentCount,
     } = req.body;
-    const newCourse = new Course({
+    const newCourse = await addCourse(
       title,
       instructor,
       startDate,
       endDate,
       subject,
       description,
-      enrollmentCount,
-    });
-    await newCourse.save();
+      enrollmentCount
+    );
     res.status(200).send(newCourse);
   } catch (error) {
     console.log(error);
@@ -74,20 +78,15 @@ router.put("/:id", async (req, res) => {
       description,
       enrollmentCount,
     } = req.body;
-    const updatedCourse = await Course.findByIdAndUpdate(
+    const updatedCourse = await updateCourse(
       id,
-      {
-        title,
-        instructor,
-        startDate,
-        endDate,
-        subject,
-        description,
-        enrollmentCount,
-      },
-      {
-        new: true,
-      }
+      title,
+      instructor,
+      startDate,
+      endDate,
+      subject,
+      description,
+      enrollmentCount
     );
     res.status(200).send(updatedCourse);
   } catch (error) {
@@ -100,7 +99,7 @@ router.put("/:id", async (req, res) => {
 router.delete("/:id", async (req, res) => {
   try {
     id = req.params.id;
-    await Course.findByIdAndDelete(id);
+    await deleteCourse(id);
     res
       .status(200)
       .send({ message: `Course with ${id} has been deleted successfully.` });

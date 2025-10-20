@@ -22,7 +22,7 @@ const instructorSchema = new Schema({
   },
 });
 
-// tv show modal
+// instructor model
 const Instructor = model("Instructor", instructorSchema);
 
 module.exports = Instructor;

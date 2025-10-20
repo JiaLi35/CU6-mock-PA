@@ -1,13 +1,20 @@
 const express = require("express");
 const router = express.Router();
 const Instructor = require("../models/instructor");
+const {
+  getInstructor,
+  getInstructors,
+  addInstructor,
+  updateInstructor,
+  deleteInstructor,
+} = require("../controllers/instructors");
 
 // instruction: import the book model
 
 // instruction: GET /: List all instructors
 router.get("/", async (req, res) => {
   try {
-    const instructors = await Instructor.find().sort({ _id: -1 });
+    const instructors = await getInstructors();
     res.status(200).send(instructors);
   } catch (error) {
     console.log(error);
@@ -19,7 +26,7 @@ router.get("/", async (req, res) => {
 router.get("/:id", async (req, res) => {
   try {
     const id = req.params.id;
-    const instructor = await Instructor.findById(id);
+    const instructor = await getInstructor(id);
     res.status(200).send(instructor);
   } catch (error) {
     console.log(error);
@@ -31,13 +38,12 @@ router.get("/:id", async (req, res) => {
 router.post("/", async (req, res) => {
   try {
     const { name, qualification, profile, coursesTaught } = req.body;
-    const newInstructor = new Instructor({
+    const newInstructor = await addInstructor(
       name,
       qualification,
       profile,
-      coursesTaught,
-    });
-    await newInstructor.save();
+      coursesTaught
+    );
     res.status(200).send(newInstructor);
   } catch (error) {
     console.log(error);
@@ -50,17 +56,12 @@ router.put("/:id", async (req, res) => {
   try {
     const id = req.params.id;
     const { name, qualification, profile, coursesTaught } = req.body;
-    const updatedInstructor = await Instructor.findByIdAndUpdate(
+    const updatedInstructor = await updateInstructor(
       id,
-      {
-        name,
-        qualification,
-        profile,
-        coursesTaught,
-      },
-      {
-        new: true,
-      }
+      name,
+      qualification,
+      profile,
+      coursesTaught
     );
     res.status(200).send(updatedInstructor);
   } catch (error) {
@@ -73,7 +74,7 @@ router.put("/:id", async (req, res) => {
 router.delete("/:id", async (req, res) => {
   try {
     id = req.params.id;
-    await Instructor.findByIdAndDelete(id);
+    await deleteInstructor(id);
     res.status(200).send({
       message: `Instructor with ${id} has been deleted successfully.`,
     });
