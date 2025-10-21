@@ -1,6 +1,5 @@
 const express = require("express");
 const router = express.Router();
-const Instructor = require("../models/instructor");
 const {
   getInstructor,
   getInstructors,
@@ -18,7 +17,7 @@ router.get("/", async (req, res) => {
     res.status(200).send(instructors);
   } catch (error) {
     console.log(error);
-    res.status(400).send({ message: "Unknown error" });
+    res.status(400).send({ message: error.message });
   }
 });
 
